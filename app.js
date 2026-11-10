@@ -353,7 +353,7 @@
     show((s) => {
       setProgress(0.68);
       heading(s, c.title, c.text);
-      const photos = allMedia().map((m, i) => ({ m, i })).filter((x) => x.m.type !== "video").slice(0, 6);
+      const photos = allMedia().map((m, i) => ({ m, i })).filter((x) => x.m.type !== "video" && x.m.game !== false).slice(0, 6);
       const deck = shuffle(photos.concat(photos).map((x, k) => ({ ...x, k })));
       const board = el("div", "board");
       let open = [], done = 0, busy = false;
@@ -490,10 +490,20 @@
     c.chapters.forEach((ch) => {
       const sec = el("section", "chapter");
       const text = el("div", "chapter-text reveal");
-      text.append(el("p", "when", ch.when), el("h2", "", ch.title), el("p", "", ch.text));
+      if (ch.when) text.append(el("p", "when", ch.when));
+      if (ch.title) text.append(el("h2", "", ch.title));
+      if (ch.text) text.append(el("p", "", ch.text));
+      if (ch.layout === "carousel") {
+        sec.classList.add("wide");
+        if (text.childNodes.length) sec.append(text);
+        sec.append(carousel(ch.media, n));
+        n += ch.media.length;
+        chapters.append(sec);
+        return;
+      }
       const mosaic = el("div", "mosaic");
       ch.media.forEach((m, k) => {
-        const fig = el("figure", "media reveal");
+        const fig = el("figure", "media reveal" + (m.fit === "tall" ? " tall" : ""));
         fig.style.transitionDelay = k * 120 + "ms";
         const zoomable = m.src && m.type !== "video";
         const frame = el(zoomable ? "button" : "div", "frame");
@@ -530,6 +540,58 @@
       });
     }, { rootMargin: "0px 0px -8% 0px", threshold: 0.12 });
     items.forEach((n) => io.observe(n));
+  }
+
+  // Photos that slide past on their own. She can also swipe, and tap one to open it.
+  function carousel(items, startIndex) {
+    const box = el("div", "carousel reveal");
+    const track = el("div", "track");
+    const dots = el("div", "dots");
+    const slides = items.map((m, k) => {
+      const b = el("button", "slide");
+      b.type = "button";
+      b.setAttribute("aria-label", "Open photo " + (k + 1) + " of " + items.length);
+      b.append(mediaNode(m, startIndex + k));
+      b.onclick = () => (m.src ? openLightbox(m) : null);
+      track.append(b);
+      dots.append(el("i"));
+      return b;
+    });
+    box.append(track, dots);
+
+    let current = -1, visible = false, pausedUntil = 0, ticking = false;
+    const mark = () => {
+      ticking = false;
+      const mid = track.scrollLeft + track.clientWidth / 2;
+      let best = 0, bestGap = Infinity;
+      slides.forEach((sl, k) => {
+        const gap = Math.abs(sl.offsetLeft + sl.offsetWidth / 2 - mid);
+        if (gap < bestGap) { bestGap = gap; best = k; }
+      });
+      if (best === current) return;
+      current = best;
+      slides.forEach((sl, k) => sl.classList.toggle("on", k === best));
+      [...dots.children].forEach((d, k) => d.classList.toggle("on", k === best));
+    };
+    const go = (k) => {
+      const sl = slides[(k + slides.length) % slides.length];
+      track.scrollTo({ left: sl.offsetLeft + sl.offsetWidth / 2 - track.clientWidth / 2, behavior: "smooth" });
+    };
+    track.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(mark); } }, { passive: true });
+    // Her finger wins: stop moving for a while after she touches it
+    const hold = () => { pausedUntil = Date.now() + 6000; };
+    track.addEventListener("pointerdown", hold, { passive: true });
+    track.addEventListener("touchstart", hold, { passive: true });
+    track.querySelectorAll("img").forEach((img) => img.addEventListener("load", mark));
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver((e) => { visible = e[0].isIntersecting; }, { threshold: 0.5 }).observe(box);
+    } else visible = true;
+    const timer = setInterval(() => {
+      if (!box.isConnected) return clearInterval(timer);
+      if (visible && Date.now() > pausedUntil && !lightbox.open) go(current + 1);
+    }, 3200);
+    requestAnimationFrame(mark);
+    return box;
   }
 
   const lightbox = document.getElementById("lightbox");

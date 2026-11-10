@@ -168,17 +168,30 @@ window.GIFT = {
   // The gift. Put your files in the media folder and write the path in src,
   // for example src: "media/first-day.jpg". An empty src shows a placeholder.
   story: {
-    title: "Our story so far",
-    intro: "A few of the moments I keep going back to.",
+    title: "Ten years of us",
+    intro: "After ten years, I have nothing grand to give you. So I made you this instead: a small new world with our story inside it. Read it like a love letter.",
+    // fit: "tall"  -> shows the whole picture, uncropped (good for phone screenshots)
+    // game: false  -> keeps the picture out of the pairs game
     chapters: [
       {
-        when: "2020",
-        title: "The day I saw you",
-        text: "I did not know it then, but everything started here. Write the real story of this day.",
+        when: "12 July 2016",
+        title: "It began with a random “Hi”",
+        text: "I sent one small message to a girl on Instagram I had never met. Then a “Hey”. The next day she wrote back: “Sorry for asking. But do I know you?” You did not, then. Ten years later, nobody on this earth knows me better.",
         media: [
-          { type: "photo", src: "", caption: "The very first photo" },
-          { type: "photo", src: "", caption: "That smile" },
-          { type: "photo", src: "", caption: "A stolen picture" },
+          { type: "photo", src: "media/2016-first-message.jpg", caption: "Where it all started.", fit: "tall", game: false },
+        ],
+      },
+      // layout: "carousel" -> photos slide past one by one, on their own or by swiping
+      {
+        layout: "carousel",
+        media: [
+          { type: "photo", src: "media/early-1.jpg" },
+          { type: "photo", src: "media/early-2.jpg" },
+          { type: "photo", src: "media/early-3.jpg" },
+          { type: "photo", src: "media/early-4.jpg" },
+          { type: "photo", src: "media/early-5.jpg" },
+          { type: "photo", src: "media/early-6.jpg" },
+          { type: "photo", src: "media/early-7.jpg" },
         ],
       },
       {
