@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#02040c">
+  <meta name="robots" content="noindex">
+  <title>For you</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 90'%3E%3Cpath fill='%23e88fa2' d='M50 86C20 62 4 46 4 27 4 13 15 4 27 4c10 0 18 5 23 14C55 9 63 4 73 4c12 0 23 9 23 23 0 19-16 35-46 59Z'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400;1,6..96,500&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Pinyon+Script&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="sky" aria-hidden="true">
+    <canvas id="starfield"></canvas>
+    <div class="aurora" id="aurora"></div>
+    <div class="moon"></div>
+    <b class="shoot"></b><b class="shoot"></b>
+    <canvas id="ridge"></canvas>
+  </div>
+  <div class="ambient" id="ambient" aria-hidden="true"></div>
+
+  <!-- The heart that draws itself as she gets closer to the gift -->
+  <div class="progress" id="progress" aria-hidden="true">
+    <svg viewBox="0 0 100 90">
+      <path class="track" d="M50 86 C20 62 4 46 4 27 C4 13 15 4 27 4 C37 4 45 9 50 18 C55 9 63 4 73 4 C85 4 96 13 96 27 C96 46 80 62 50 86 Z"/>
+      <path class="drawn" id="progressPath" pathLength="100" d="M50 86 C20 62 4 46 4 27 C4 13 15 4 27 4 C37 4 45 9 50 18 C55 9 63 4 73 4 C85 4 96 13 96 27 C96 46 80 62 50 86 Z"/>
+    </svg>
+  </div>
+
+  <main id="stage" class="stage" aria-live="polite"></main>
+
+  <dialog id="lightbox" class="lightbox" aria-label="Photo">
+    <img alt="">
+    <p></p>
+  </dialog>
+
+  <noscript><p class="noscript">This little gift needs JavaScript turned on.</p></noscript>
+
+  <script src="sky.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

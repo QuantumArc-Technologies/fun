@@ -1,0 +1,199 @@
+/* Everything you will want to change lives in this file.
+   Names, questions, answers, messages, photos and videos. */
+
+window.GIFT = {
+  her: {
+    // Any of these spellings is accepted (capital letters and spaces do not matter).
+    names: ["ammu", "ammus"],
+    display: "Ammu",
+  },
+  // photo: your face for the catch game, for example "media/me.jpg". Empty shows your initial.
+  him: { name: "Vaishakh", initial: "V", photo: "" },
+
+  intro: {
+    title: "Something small, made for one person only",
+    text: "If that person is you, there is a gift waiting at the end. You will have to earn it a little.",
+    button: "Begin",
+  },
+
+  nameGate: {
+    title: "First, who is this?",
+    text: "Type your name. This page opens for exactly one girl.",
+    button: "Let me in",
+    empty: "Type your name first.",
+    wrong: [
+      "Nice try. Only one name opens this page, and that is not it.",
+      "Hmm, no. Are you sure you are not her friend, peeking?",
+      "Still no. Please hand the phone to the rightful owner.",
+      "This page is very loyal. It is waiting for her and only her.",
+    ],
+    welcomeTitle: "There you are",
+    welcomeText: "I was hoping it would be you. Now a few questions, just to be sure you are really mine.",
+    welcomeButton: "Ask me anything",
+  },
+
+  // type: "choice" | "text" | "number" | "date"
+  // choice -> answer is the exact option text
+  // text   -> answer is a list of accepted spellings
+  // number -> answer is a number
+  // date   -> answer is "YYYY-MM-DD"
+  questions: [
+    {
+      type: "choice",
+      q: "Where did we first see each other?",
+      options: ["At college", "At a wedding", "On Instagram", "At the bus stop"],
+      answer: "At college",
+      yes: "You remember. So do I, every detail.",
+    },
+    {
+      type: "date",
+      q: "What is our special date?",
+      answer: "2020-02-14",
+      yes: "The best day on my calendar.",
+    },
+    {
+      type: "number",
+      q: "How many years have we been together?",
+      answer: 5,
+      yes: "And it still feels like the beginning.",
+    },
+    {
+      type: "choice",
+      q: "Who said “I love you” first?",
+      options: ["Me", "You", "We said it together", "Nobody remembers"],
+      answer: "You",
+      yes: "Guilty. I could not wait any longer.",
+    },
+    {
+      type: "choice",
+      q: "What was the first movie we watched together?",
+      options: ["Premam", "Hridayam", "Bangalore Days", "Charlie"],
+      answer: "Hridayam",
+      yes: "I watched you more than the screen.",
+    },
+    {
+      type: "text",
+      q: "What do I call you most?",
+      answer: ["ammu", "ammus"],
+      yes: "My favourite word to say.",
+    },
+    {
+      type: "choice",
+      q: "Who gets angry first?",
+      options: ["Me, obviously", "You, always", "Both at the same time", "We never fight"],
+      answer: "Me, obviously",
+      yes: "Honest. And still adorable when angry.",
+    },
+    {
+      type: "choice",
+      q: "Who loves the other one more?",
+      options: ["I do", "You do", "It is a tie", "Still under investigation"],
+      answer: "You do",
+      yes: "Correct. I will always win this one.",
+    },
+  ],
+  quizWrong: [
+    "Ayyo, no. Think again.",
+    "Wrong. I am pretending I did not see that.",
+    "Not that one. You know this.",
+    "Hmm. Should I be worried? Try again.",
+  ],
+  quizDone: {
+    title: "You know us by heart",
+    text: "Every answer right. Now come and catch me, if you can.",
+    button: "Catch him",
+  },
+
+  catchGame: {
+    title: "Catch me",
+    text: "Tap me before I run away.",
+    target: 8,
+    teases: ["Too slow", "Almost", "Over here", "Missed me", "Try again", "So close"],
+    caught: ["Got me", "Again", "Okay, okay", "You are fast", "Caught"],
+    doneTitle: "You caught me",
+    doneText: "You always do. One more little game, then we are nearly there.",
+    doneButton: "Next game",
+  },
+
+  matchGame: {
+    title: "Find the pairs",
+    text: "Turn two cards at a time and match our moments.",
+    doneTitle: "Every pair found",
+    doneText: "Like us. One last question before your gift.",
+    doneButton: "Ask me",
+  },
+
+  love: {
+    title: "How much do you love me?",
+    text: "Choose honestly.",
+    options: ["25%", "50%", "75%", "100%"],
+    answer: "100%",
+    dodges: [
+      "That one is shy.",
+      "No no, not that.",
+      "It ran away. Strange.",
+      "Try a bigger number.",
+      "You cannot catch a wrong answer.",
+    ],
+    yes: "I knew it.",
+  },
+
+  heart: {
+    title: "You did everything right",
+    text: "So here it is. My heart is open, and what is inside is yours.",
+    button: "Open my heart",
+  },
+
+  // The gift. Put your files in the media folder and write the path in src,
+  // for example src: "media/first-day.jpg". An empty src shows a placeholder.
+  story: {
+    title: "Our story so far",
+    intro: "A few of the moments I keep going back to.",
+    chapters: [
+      {
+        when: "2020",
+        title: "The day I saw you",
+        text: "I did not know it then, but everything started here. Write the real story of this day.",
+        media: [
+          { type: "photo", src: "", caption: "The very first photo" },
+          { type: "photo", src: "", caption: "That smile" },
+          { type: "photo", src: "", caption: "A stolen picture" },
+        ],
+      },
+      {
+        when: "2021",
+        title: "Becoming us",
+        text: "Long calls, small fights, bigger laughs. Write what this year meant to you two.",
+        media: [
+          { type: "video", src: "", caption: "A video from that trip" },
+          { type: "photo", src: "", caption: "Our first trip" },
+          { type: "photo", src: "", caption: "Your favourite place" },
+        ],
+      },
+      {
+        when: "2023",
+        title: "The days I love most",
+        text: "The ordinary ones. Tea, rain, your head on my shoulder. Write your own here.",
+        media: [
+          { type: "photo", src: "", caption: "An ordinary, perfect day" },
+          { type: "photo", src: "", caption: "You, laughing" },
+          { type: "video", src: "", caption: "A video that makes me smile" },
+        ],
+      },
+      {
+        when: "Today",
+        title: "And everything still to come",
+        text: "So many pages left to fill. I want to fill every one of them with you.",
+        media: [
+          { type: "photo", src: "", caption: "My favourite picture of us" },
+        ],
+      },
+    ],
+    letterTitle: "One last thing",
+    letter: [
+      "Thank you for every year, every call, every silly fight and every time you chose me again.",
+      "This page is small. What I feel for you is not.",
+    ],
+    signoff: "Yours, always",
+  },
+};
