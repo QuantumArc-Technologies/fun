@@ -1008,3 +1008,24 @@ h1 { animation: rise 0.75s var(--ease) backwards, sheen 7s ease-in-out 0.8s infi
   .chapter { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }
   .chapter.wide { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Story paragraphs, and the cheeky face under a photo */
+.chapter-text p.body { color: #ecc9d2; margin: 0.9rem 0 0; max-width: 30rem; }
+.media .wink {
+  margin: 0.5rem 0 0;
+  font-size: 3rem;
+  line-height: 1;
+  text-align: center;
+  font-style: normal;
+  animation: wink 2.6s ease-in-out infinite;
+  transform-origin: 50% 80%;
+}
+.media:has(.wink) figcaption { text-align: center; }
+@keyframes wink {
+  0%, 60%, 100% { transform: rotate(0) scale(1); }
+  70% { transform: rotate(-12deg) scale(1.15); }
+  80% { transform: rotate(10deg) scale(1.15); }
+  90% { transform: rotate(-4deg) scale(1.05); }
+}
+@media (prefers-reduced-motion: reduce) { .media .wink { animation: none; } }
+.chapter-text p.body { text-shadow: 0 1px 14px rgba(2, 4, 14, 0.95), 0 0 3px rgba(2, 4, 14, 0.7); }

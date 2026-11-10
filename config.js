@@ -194,6 +194,21 @@ window.GIFT = {
           { type: "photo", src: "media/early-7.jpg" },
         ],
       },
+      // text can be one line, or a list of paragraphs
+      // emoji: "..." under a photo shows it large, after the caption
+      {
+        when: "The first time",
+        title: "A temple, and a little hand in yours",
+        text: [
+          "The first time I saw you was near that temple. You were walking past, holding a little child by the hand, and you had no idea someone had just stopped breathing for a second.",
+          "Then came the long wait. And then Kota, where you finally held my hand. It still feels like yesterday.",
+          "The film we watched there, the food we shared, every hour of those first days. That time is the most precious thing I own.",
+          "I will not write all of it here. You remember. That is exactly what this page is for.",
+        ],
+        media: [
+          { type: "photo", src: "media/first-days.jpg", caption: "About this photo, I do not need to say a single word.", emoji: "😏" },
+        ],
+      },
       {
         when: "2021",
         title: "Becoming us",

@@ -492,7 +492,7 @@
       const text = el("div", "chapter-text reveal");
       if (ch.when) text.append(el("p", "when", ch.when));
       if (ch.title) text.append(el("h2", "", ch.title));
-      if (ch.text) text.append(el("p", "", ch.text));
+      if (ch.text) [].concat(ch.text).forEach((para) => text.append(el("p", "body", para)));
       if (ch.layout === "carousel") {
         sec.classList.add("wide");
         if (text.childNodes.length) sec.append(text);
@@ -515,6 +515,7 @@
         }
         fig.append(frame);
         if (m.caption) fig.append(el("figcaption", "", m.caption));
+        if (m.emoji) fig.append(el("p", "wink", m.emoji));
         mosaic.append(fig);
       });
       sec.append(text, mosaic);
