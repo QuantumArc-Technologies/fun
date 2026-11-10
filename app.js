@@ -202,12 +202,13 @@
       says.setAttribute("role", "status");
       let locked = false;
 
-      const right = (node) => {
+      const right = (node, line) => {
         locked = true;
         says.className = "says good";
-        says.textContent = q.yes || "Yes.";
+        says.textContent = line || q.yes || "Yes.";
         burstFrom(node, 14, 110);
-        setTimeout(() => quiz(i + 1), 1500);
+        // Longer lines stay on screen longer, so she has time to read them
+        setTimeout(() => quiz(i + 1), Math.max(1500, says.textContent.length * 60));
       };
       const wrong = (node) => {
         says.className = "says";
@@ -222,7 +223,10 @@
           b.type = "button";
           b.onclick = () => {
             if (locked) return;
-            if (o === q.answer) { b.classList.add("right"); right(b); } else wrong(b);
+            const reply = q.replies && q.replies[o];
+            if (o === q.answer) { b.classList.add("right"); right(b, reply); }
+            else if (q.any) { b.classList.add("right"); right(b, reply || q.other); }
+            else wrong(b);
           };
           box.append(b);
         });

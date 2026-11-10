@@ -940,3 +940,6 @@ h1 { animation: rise 0.75s var(--ease) backwards, sheen 7s ease-in-out 0.8s infi
 @media (prefers-reduced-motion: reduce) {
   .aurora canvas, .moon, .shoot, .ambient, #starfield, .star { animation: none !important; }
 }
+
+/* His photo fills the running circle */
+.runner { background-size: cover; background-position: center; }

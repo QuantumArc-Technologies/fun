@@ -4,11 +4,11 @@
 window.GIFT = {
   her: {
     // Any of these spellings is accepted (capital letters and spaces do not matter).
-    names: ["ammu", "ammus"],
-    display: "Ammu",
+    names: ["aswathi"],
+    display: "Aswathi",
   },
   // photo: your face for the catch game, for example "media/me.jpg". Empty shows your initial.
-  him: { name: "Vaishakh", initial: "V", photo: "" },
+  him: { name: "Vaishakh", initial: "V", photo: "media/me.jpg" },
 
   intro: {
     title: "Something small, made for one person only",
@@ -37,25 +37,34 @@ window.GIFT = {
   // text   -> answer is a list of accepted spellings
   // number -> answer is a number
   // date   -> answer is "YYYY-MM-DD"
+  // any: true     -> every option lets her through (nothing is blocked)
+  // replies: {..} -> a different line for each option she picks
   questions: [
     {
       type: "choice",
       q: "Where did we first see each other?",
       options: ["At college", "At a wedding", "On Instagram", "At the bus stop"],
-      answer: "At college",
-      yes: "You remember. So do I, every detail.",
+      answer: "On Instagram",
+      yes: "One follow request, and here we are.",
+    },
+    {
+      type: "choice",
+      q: "Where do I live now?",
+      options: ["In Kerala", "In my heart", "In my phone", "On another planet"],
+      answer: "In my heart",
+      yes: "Rent free, and never moving out.",
     },
     {
       type: "date",
       q: "What is our special date?",
-      answer: "2020-02-14",
-      yes: "The best day on my calendar.",
+      answer: "2016-07-13",
+      yes: "13 July 2016. The best day on my calendar.",
     },
     {
       type: "number",
       q: "How many years have we been together?",
-      answer: 5,
-      yes: "And it still feels like the beginning.",
+      answer: 10,
+      yes: "Ten years, and it still feels like the beginning.",
     },
     {
       type: "choice",
@@ -67,29 +76,41 @@ window.GIFT = {
     {
       type: "choice",
       q: "What was the first movie we watched together?",
-      options: ["Premam", "Hridayam", "Bangalore Days", "Charlie"],
-      answer: "Hridayam",
-      yes: "I watched you more than the screen.",
+      options: ["Raees", "Premam", "Charlie", "Bangalore Days"],
+      answer: "Raees",
+      any: true,
+      yes: "Raees. Not that I saw much of the movie.",
+      other: "It was Raees. But I will let it go, because neither of us was really watching.",
+    },
+    {
+      type: "choice",
+      q: "And while that movie was playing, did anything special happen in the dark?",
+      options: ["Yes", "No"],
+      any: true,
+      replies: {
+        Yes: "Good. Tell Vaishakh exactly what, when he calls. Slowly, and in detail.",
+        No: "No? Vaishakh remembers it very differently. Explain yourself when he calls.",
+      },
     },
     {
       type: "text",
       q: "What do I call you most?",
-      answer: ["ammu", "ammus"],
-      yes: "My favourite word to say.",
+      answer: ["achu"],
+      yes: "Achu. My favourite word to say.",
     },
     {
       type: "choice",
       q: "Who gets angry first?",
-      options: ["Me, obviously", "You, always", "Both at the same time", "We never fight"],
-      answer: "Me, obviously",
-      yes: "Honest. And still adorable when angry.",
+      options: ["Me, obviously", "You, always", "Both of us, exactly the same", "We never fight"],
+      answer: "Both of us, exactly the same",
+      yes: "Two short fuses, one long love story.",
     },
     {
       type: "choice",
       q: "Who loves the other one more?",
-      options: ["I do", "You do", "It is a tie", "Still under investigation"],
-      answer: "You do",
-      yes: "Correct. I will always win this one.",
+      options: ["I do", "You do", "Both of us, exactly the same", "Still under investigation"],
+      answer: "Both of us, exactly the same",
+      yes: "Equal, always. That is why it works.",
     },
   ],
   quizWrong: [
