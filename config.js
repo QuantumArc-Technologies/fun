@@ -206,7 +206,7 @@ window.GIFT = {
           "I will not write all of it here. You remember. That is exactly what this page is for.",
         ],
         media: [
-          { type: "photo", src: "media/first-days.jpg", caption: "About this photo, I do not need to say a single word.", emoji: "😏" },
+          { type: "photo", src: "media/first-days.jpg", caption: "About this photo, I do not need to say a single word.", emoji: "😉" },
         ],
       },
       {
