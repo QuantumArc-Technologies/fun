@@ -1029,3 +1029,192 @@ h1 { animation: rise 0.75s var(--ease) backwards, sheen 7s ease-in-out 0.8s infi
 }
 @media (prefers-reduced-motion: reduce) { .media .wink { animation: none; } }
 .chapter-text p.body { text-shadow: 0 1px 14px rgba(2, 4, 14, 0.95), 0 0 3px rgba(2, 4, 14, 0.7); }
+
+/* ================= Photo wall ================= */
+.gallery-chapter .chapter-text { text-align: center; justify-self: center; }
+.gallery-chapter .chapter-text h2 { padding-left: 0.14em; }
+.gallery-chapter .chapter-text p.body { margin-inline: auto; font-style: italic; color: var(--peach); }
+.gallery { display: flex; gap: 12px; align-items: flex-start; margin: 0.6rem -8px 0; padding-bottom: 30px; }
+.gcol { flex: 1 1 0; min-width: 0; display: grid; gap: 12px; will-change: transform; }
+.gcol:nth-child(even) { margin-top: 46px; }
+.tile {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #1a1440;
+  cursor: zoom-in;
+  opacity: 0;
+  transform: translate3d(var(--from, 0), 54px, 0) rotate(var(--tilt, 0deg)) scale(0.86);
+  transition: opacity 0.9s var(--ease), transform 1.1s var(--ease), box-shadow 0.9s;
+  box-shadow: 0 0 0 1px rgba(233, 197, 148, 0);
+  -webkit-tap-highlight-color: transparent;
+}
+.tile.in {
+  opacity: 1;
+  transform: none;
+  box-shadow: 0 22px 44px -22px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(233, 197, 148, 0.42), 0 0 34px -12px rgba(240, 163, 180, 0.5);
+}
+.tile img, .tile .ph {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.22);
+  transition: transform 1.9s var(--ease);
+}
+.tile.in img, .tile.in .ph { transform: none; }
+/* A band of light crosses each photo once as it arrives */
+.tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.5) 50%, transparent 65%);
+  transform: translateX(-130%);
+  pointer-events: none;
+}
+.tile.in::after { animation: tileShine 1.3s ease-out 0.45s both; }
+@keyframes tileShine { to { transform: translateX(130%); } }
+.tile:active { transform: scale(0.97); transition-duration: 0.15s; transition-delay: 0s !important; }
+
+/* ================= Full-screen viewer ================= */
+.lightbox[open] { display: grid; place-content: center; justify-items: center; gap: 0.6rem; animation: lbFade 0.3s ease-out; }
+@keyframes lbFade { from { opacity: 0; } }
+.lightbox img { border-radius: 14px; box-shadow: 0 30px 80px -20px #000, 0 0 0 1px rgba(233, 197, 148, 0.35); }
+.lightbox img.zoom { animation: lbZoom 0.45s var(--ease) both; }
+.lightbox img.from-next { animation: lbNext 0.4s var(--ease) both; }
+.lightbox img.from-prev { animation: lbPrev 0.4s var(--ease) both; }
+@keyframes lbZoom { from { opacity: 0; transform: scale(0.82); } }
+@keyframes lbNext { from { opacity: 0; transform: translateX(60px) scale(0.96); } }
+@keyframes lbPrev { from { opacity: 0; transform: translateX(-60px) scale(0.96); } }
+.lightbox p:empty { display: none; }
+.lb-btn {
+  position: fixed;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0 0 4px;
+  border: 1px solid rgba(233, 197, 148, 0.45);
+  border-radius: 50%;
+  background: rgba(8, 8, 28, 0.6);
+  color: var(--ivory);
+  font: 400 1.8rem/1 var(--display);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.lb-close { top: max(12px, env(safe-area-inset-top)); right: 12px; }
+.lb-prev { left: 8px; top: 50%; margin-top: -22px; }
+.lb-next { right: 8px; top: 50%; margin-top: -22px; }
+.lb-count {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  text-align: center;
+  font: italic 500 1.05rem var(--body);
+  color: var(--gold);
+  pointer-events: none;
+}
+.lightbox.single .lb-prev, .lightbox.single .lb-next { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .tile, .tile img { transition: none; opacity: 1; transform: none; }
+  .tile::after, .lightbox img { animation: none !important; }
+}
+/* Photos sliding in from the sides must never widen the page */
+html { overflow-x: clip; }
+.story { overflow-x: clip; }
+.lb-count { bottom: max(26px, calc(env(safe-area-inset-bottom) + 14px)); font-size: 1.15rem; }
+
+/* ================= Video carousel ================= */
+.videos .track { gap: 16px; padding-inline: 14vw; }
+.vslide {
+  position: relative;
+  flex: none;
+  scroll-snap-align: center;
+  height: min(64vh, 540px);
+  border-radius: 24px;
+  overflow: hidden;
+  background: #120f33 center / cover no-repeat;
+  cursor: pointer;
+  opacity: 0.45;
+  transform: scale(0.88);
+  transition: transform 0.6s var(--ease), opacity 0.6s var(--ease), box-shadow 0.6s;
+  -webkit-tap-highlight-color: transparent;
+}
+.vslide.on {
+  opacity: 1;
+  transform: none;
+  box-shadow: 0 30px 60px -24px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(233, 197, 148, 0.55), 0 0 50px -8px rgba(240, 163, 180, 0.45);
+}
+.vslide video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; background: #000; }
+.vbar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--rose), var(--gold));
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 0.25s linear;
+}
+.vsound {
+  position: absolute;
+  right: 10px;
+  bottom: 16px;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid rgba(233, 197, 148, 0.6);
+  border-radius: 999px;
+  background: rgba(6, 6, 24, 0.62);
+  color: var(--ivory);
+  font: italic 500 1rem/1 var(--body);
+  cursor: pointer;
+  animation: soundNudge 2.2s ease-in-out infinite;
+}
+.vsound.on { animation: none; border-color: transparent; color: var(--gold); }
+@keyframes soundNudge { 50% { transform: scale(1.07); box-shadow: 0 0 18px -2px rgba(233, 197, 148, 0.8); } }
+.vpaused {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 68px;
+  height: 68px;
+  margin: -34px 0 0 -34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(6, 6, 24, 0.6);
+  border: 1px solid rgba(233, 197, 148, 0.6);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.25s, transform 0.25s var(--ease);
+  pointer-events: none;
+}
+.vpaused svg { width: 30px; fill: var(--ivory); margin-left: 4px; }
+.is-paused .vpaused { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .vslide { transition: none; } .vsound { animation: none; } }
+
+/* While she reads the story the moon steps back, so words passing over it stay readable */
+.moon { transition: opacity 2.5s ease; }
+.in-story .moon { opacity: 0.32; }
+
+/* The one line in the letter that matters most */
+.letter p.strong {
+  margin-top: 1.8rem;
+  padding: 0.1em 0.2em 0.2em;
+  font: italic 500 clamp(1.9rem, 7.5vw, 2.6rem)/1.2 var(--display);
+  background: linear-gradient(100deg, var(--blush), var(--rose) 40%, var(--gold) 75%, #fff3df);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  animation: sheen 6s ease-in-out infinite alternate;
+}
+.letter p.strong + p { margin-top: 1.8rem; }

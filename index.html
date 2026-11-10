@@ -33,8 +33,12 @@
   <main id="stage" class="stage" aria-live="polite"></main>
 
   <dialog id="lightbox" class="lightbox" aria-label="Photo">
+    <button type="button" class="lb-btn lb-close" aria-label="Close">&times;</button>
+    <button type="button" class="lb-btn lb-prev" aria-label="Previous photo">&lsaquo;</button>
     <img alt="">
+    <button type="button" class="lb-btn lb-next" aria-label="Next photo">&rsaquo;</button>
     <p></p>
+    <span class="lb-count"></span>
   </dialog>
 
   <noscript><p class="noscript">This little gift needs JavaScript turned on.</p></noscript>

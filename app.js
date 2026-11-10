@@ -121,7 +121,7 @@
     n.alt = item.caption || "";
     n.decoding = "async";
     n.onerror = () => n.replaceWith(placeholder(item, i));
-    n.src = item.src;
+    n.src = item.thumb || item.src;
     return n;
   }
 
@@ -131,7 +131,7 @@
   function preloadPhotos() {
     if (preloaded) return;
     preloaded = true;
-    const list = allMedia().filter((m) => m.src && m.type !== "video").map((m) => m.src);
+    const list = allMedia().filter((m) => m.src && m.type !== "video").map((m) => m.thumb || m.src);
     if (G.him.photo) list.unshift(G.him.photo);
     const next = () => {
       const src = list.shift();
@@ -478,6 +478,7 @@
   function story() {
     const c = G.story;
     progress.classList.add("hidden");
+    document.body.classList.add("in-story"); // dims the moon so it never fights the text
     stage.innerHTML = "";
     const root = el("article", "story");
 
@@ -493,6 +494,22 @@
       if (ch.when) text.append(el("p", "when", ch.when));
       if (ch.title) text.append(el("h2", "", ch.title));
       if (ch.text) [].concat(ch.text).forEach((para) => text.append(el("p", "body", para)));
+      if (ch.layout === "gallery") {
+        sec.classList.add("wide", "gallery-chapter");
+        if (text.childNodes.length) sec.append(text);
+        sec.append(gallery(ch.media, n));
+        n += ch.media.length;
+        chapters.append(sec);
+        return;
+      }
+      if (ch.layout === "videos") {
+        sec.classList.add("wide", "gallery-chapter");
+        if (text.childNodes.length) sec.append(text);
+        sec.append(videoCarousel(ch.media));
+        n += ch.media.length;
+        chapters.append(sec);
+        return;
+      }
       if (ch.layout === "carousel") {
         sec.classList.add("wide");
         if (text.childNodes.length) sec.append(text);
@@ -511,7 +528,7 @@
         if (zoomable) {
           frame.type = "button";
           frame.setAttribute("aria-label", "Open photo: " + (m.caption || ""));
-          frame.onclick = () => openLightbox(m);
+          frame.onclick = () => openLightbox(m, ch.media);
         }
         fig.append(frame);
         if (m.caption) fig.append(el("figcaption", "", m.caption));
@@ -525,7 +542,7 @@
 
     const letter = el("section", "letter reveal");
     letter.append(el("h2", "", c.letterTitle));
-    c.letter.forEach((p) => letter.append(el("p", "", p)));
+    c.letter.forEach((p) => letter.append(typeof p === "string" ? el("p", "", p) : el("p", p.strong ? "strong" : "", p.text)));
     letter.append(el("p", "sign", c.signoff), el("p", "name", G.him.name));
     root.append(letter);
 
@@ -553,7 +570,7 @@
       b.type = "button";
       b.setAttribute("aria-label", "Open photo " + (k + 1) + " of " + items.length);
       b.append(mediaNode(m, startIndex + k));
-      b.onclick = () => (m.src ? openLightbox(m) : null);
+      b.onclick = () => (m.src ? openLightbox(m, items) : null);
       track.append(b);
       dots.append(el("i"));
       return b;
@@ -595,14 +612,205 @@
     return box;
   }
 
+  // Videos in a row. One plays to the end, then the next slides in and plays.
+  // A single player moves from slide to slide, so once she turns the sound on
+  // it stays on for every video (phones only allow that for the same player).
+  function videoCarousel(items) {
+    const box = el("div", "carousel videos reveal");
+    const track = el("div", "track");
+    const dots = el("div", "dots");
+    const video = el("video");
+    video.playsInline = true;
+    video.muted = true;
+    video.preload = "auto";
+    video.setAttribute("playsinline", "");
+    video.setAttribute("webkit-playsinline", "");
+    const bar = el("i", "vbar");
+    const sound = el("button", "vsound", "Tap for sound");
+    sound.type = "button";
+    const paused = el("span", "vpaused");
+    paused.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+
+    const slides = items.map((m, k) => {
+      const sl = el("div", "vslide");
+      sl.style.aspectRatio = (m.w || 9) + " / " + (m.h || 16);
+      if (m.poster) sl.style.backgroundImage = "url(" + JSON.stringify(m.poster) + ")";
+      sl.setAttribute("role", "button");
+      sl.setAttribute("aria-label", "Video " + (k + 1) + " of " + items.length);
+      track.append(sl);
+      dots.append(el("i"));
+      return sl;
+    });
+    box.append(track, dots);
+
+    let current = -1, visible = false, userPaused = false, ticking = false;
+    const play = () => { if (visible && !userPaused) video.play().catch(() => {}); };
+    const activate = (k) => {
+      if (k === current) return;
+      current = k;
+      slides.forEach((sl, i) => sl.classList.toggle("on", i === k));
+      [...dots.children].forEach((d, i) => d.classList.toggle("on", i === k));
+      userPaused = false;
+      box.classList.remove("is-paused");
+      bar.style.transform = "scaleX(0)";
+      video.poster = items[k].poster || "";
+      video.src = items[k].src;
+      slides[k].append(video, bar, sound, paused);
+      play();
+    };
+    const go = (k) => {
+      const sl = slides[(k + slides.length) % slides.length];
+      track.scrollTo({ left: sl.offsetLeft + sl.offsetWidth / 2 - track.clientWidth / 2, behavior: "smooth" });
+    };
+    const mark = () => {
+      ticking = false;
+      const mid = track.scrollLeft + track.clientWidth / 2;
+      let best = 0, gapBest = Infinity;
+      slides.forEach((sl, k) => {
+        const gap = Math.abs(sl.offsetLeft + sl.offsetWidth / 2 - mid);
+        if (gap < gapBest) { gapBest = gap; best = k; }
+      });
+      activate(best);
+    };
+    track.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(mark); } }, { passive: true });
+
+    // When one ends, the next one slides in and starts
+    video.addEventListener("ended", () => {
+      if (slides.length < 2) { video.currentTime = 0; return play(); }
+      go(current + 1);
+    });
+    video.addEventListener("timeupdate", () => {
+      if (video.duration) bar.style.transform = "scaleX(" + video.currentTime / video.duration + ")";
+    });
+    sound.addEventListener("click", (e) => {
+      e.stopPropagation();
+      video.muted = !video.muted;
+      sound.textContent = video.muted ? "Tap for sound" : "Sound on";
+      sound.classList.toggle("on", !video.muted);
+      if (!video.muted) { userPaused = false; box.classList.remove("is-paused"); play(); }
+    });
+    // Tapping the video pauses and resumes it; tapping a side video brings it in
+    slides.forEach((sl, k) => sl.addEventListener("click", () => {
+      if (k !== current) return go(k);
+      userPaused = !userPaused;
+      box.classList.toggle("is-paused", userPaused);
+      userPaused ? video.pause() : play();
+    }));
+    // Only plays while she is actually looking at it
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver((e) => {
+        visible = e[0].isIntersecting;
+        visible ? play() : video.pause();
+      }, { threshold: 0.55 }).observe(box);
+    } else visible = true;
+    document.addEventListener("visibilitychange", () => { document.hidden ? video.pause() : play(); });
+    requestAnimationFrame(mark);
+    return box;
+  }
+
+  // A wall of photos in uneven columns. Each one rises into place as she scrolls
+  // to it, and the columns drift at slightly different speeds.
+  function gallery(items, startIndex) {
+    const box = el("div", "gallery");
+    const count = innerWidth >= 1100 ? 4 : innerWidth >= 700 ? 3 : 2;
+    const cols = Array.from({ length: count }, () => ({ node: el("div", "gcol"), height: 0, n: 0 }));
+    items.forEach((m, k) => {
+      const col = cols.reduce((a, b) => (b.height < a.height ? b : a));
+      const tile = el("button", "tile");
+      tile.type = "button";
+      tile.setAttribute("aria-label", "Open photo " + (k + 1) + " of " + items.length);
+      tile.style.aspectRatio = (m.w || 3) + " / " + (m.h || 4);
+      tile.style.setProperty("--tilt", ((k * 37) % 9 - 4) * 0.9 + "deg");
+      tile.style.setProperty("--from", k % 2 ? "34px" : "-34px");
+      const img = mediaNode(m, startIndex + k);
+      if (img.tagName === "IMG") img.loading = "lazy";
+      tile.append(img);
+      tile.onclick = () => (m.src ? openLightbox(m, items) : null);
+      col.node.append(tile);
+      col.height += (m.h || 4) / (m.w || 3);
+      col.n++;
+    });
+    cols.forEach((c) => box.append(c.node));
+
+    const tiles = [...box.querySelectorAll(".tile")];
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver((entries) => {
+        let wave = 0;
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return;
+          e.target.style.transitionDelay = wave++ * 110 + "ms";
+          e.target.classList.add("in");
+          io.unobserve(e.target);
+        });
+      }, { rootMargin: "0px 0px -6% 0px", threshold: 0.15 });
+      tiles.forEach((t) => io.observe(t));
+
+      // Columns drift against each other while the wall is on screen
+      if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        let onScreen = false, queued = false;
+        const drift = () => {
+          queued = false;
+          const r = box.getBoundingClientRect();
+          const p = Math.max(-1, Math.min(1, (innerHeight / 2 - (r.top + r.height / 2)) / (r.height / 2 + innerHeight / 2)));
+          cols.forEach((c, k) => { c.node.style.transform = "translate3d(0," + (k % 2 ? -1 : 1) * p * 26 + "px,0)"; });
+        };
+        new IntersectionObserver((e) => { onScreen = e[0].isIntersecting; }).observe(box);
+        addEventListener("scroll", () => {
+          if (!onScreen || queued || !box.isConnected) return;
+          queued = true;
+          requestAnimationFrame(drift);
+        }, { passive: true });
+      }
+    } else tiles.forEach((t) => t.classList.add("in"));
+    return box;
+  }
+
+  /* ---------- full-screen viewer: swipe, arrows, counter ---------- */
   const lightbox = document.getElementById("lightbox");
-  function openLightbox(m) {
-    lightbox.querySelector("img").src = m.src;
-    lightbox.querySelector("img").alt = m.caption || "";
-    lightbox.querySelector("p").textContent = m.caption || "";
+  const lbImg = lightbox.querySelector("img");
+  const lbText = lightbox.querySelector("p");
+  const lbCount = lightbox.querySelector(".lb-count");
+  let lbList = [], lbAt = 0, swiped = false;
+
+  function lbShow(k, dir) {
+    lbAt = (k + lbList.length) % lbList.length;
+    const m = lbList[lbAt];
+    lbImg.classList.remove("from-next", "from-prev", "zoom");
+    void lbImg.offsetWidth;
+    lbImg.classList.add(dir > 0 ? "from-next" : dir < 0 ? "from-prev" : "zoom");
+    lbImg.src = m.src;
+    lbImg.alt = m.caption || "";
+    lbText.textContent = m.caption || "";
+    lbCount.textContent = lbList.length > 1 ? lbAt + 1 + " / " + lbList.length : "";
+    lightbox.classList.toggle("single", lbList.length < 2);
+    // Have the neighbours ready before she swipes
+    if (lbList.length > 1) [1, -1].forEach((d) => { new Image().src = lbList[(lbAt + d + lbList.length) % lbList.length].src; });
+  }
+  function openLightbox(m, group) {
+    lbList = (group || [m]).filter((x) => x.src && x.type !== "video");
+    if (!lbList.includes(m)) lbList = [m];
+    lbShow(lbList.indexOf(m), 0);
     lightbox.showModal();
   }
-  lightbox.addEventListener("click", () => lightbox.close());
+  lightbox.querySelector(".lb-next").addEventListener("click", (e) => { e.stopPropagation(); lbShow(lbAt + 1, 1); });
+  lightbox.querySelector(".lb-prev").addEventListener("click", (e) => { e.stopPropagation(); lbShow(lbAt - 1, -1); });
+  lightbox.addEventListener("click", () => { if (swiped) { swiped = false; return; } lightbox.close(); });
+  let touchX = null, touchY = 0;
+  lightbox.addEventListener("touchstart", (e) => { touchX = e.touches[0].clientX; touchY = e.touches[0].clientY; swiped = false; }, { passive: true });
+  lightbox.addEventListener("touchend", (e) => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX, dy = e.changedTouches[0].clientY - touchY;
+    touchX = null;
+    if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy) || lbList.length < 2) return;
+    swiped = true;
+    setTimeout(() => { swiped = false; }, 400);
+    lbShow(lbAt + (dx < 0 ? 1 : -1), dx < 0 ? 1 : -1);
+  }, { passive: true });
+  addEventListener("keydown", (e) => {
+    if (!lightbox.open || lbList.length < 2) return;
+    if (e.key === "ArrowRight") lbShow(lbAt + 1, 1);
+    if (e.key === "ArrowLeft") lbShow(lbAt - 1, -1);
+  });
 
   /* ---------- start ----------
      While you are building, jump straight to a part with ?go=name, quiz,
